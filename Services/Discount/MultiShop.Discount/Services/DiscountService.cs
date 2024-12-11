@@ -27,24 +27,46 @@ namespace MultiShop.Discount.Services
             }
         }
 
-        public Task DeleteDiscountCouponAsync(int id)
+        public async Task DeleteDiscountCouponAsync(int id)
         {
-            throw new NotImplementedException();
+            string query = "Delete From Coupons where CouponId=@couponId";
+            var parameters = new DynamicParameters();
+            parameters.Add("couponId", id);
+            using (var con = _dapperContext.CreateConnection())
+            {
+                await con.ExecuteAsync(query, parameters);
+            }
         }
 
-        public Task<List<ResultDiscountCouponDto>> GetAllDiscountCouponAsync()
+        public async Task<List<ResultDiscountCouponDto>> GetAllDiscountCouponAsync()
         {
-            throw new NotImplementedException();
+            string query = "select * from Coupons";
+            var context = _dapperContext.CreateConnection();
+            var values = await context.QueryAsync<ResultDiscountCouponDto>(query);
+            return values.ToList();
         }
 
-        public Task<GetByIdDiscountCouponDto> GetByIdDiscountCouponAsync(int id)
+        public async Task<GetByIdDiscountCouponDto> GetByIdDiscountCouponAsync(int id)
         {
-            throw new NotImplementedException();
+            string query = "select * from Coupons where CouponId=@couponid";
+            var parameters = new DynamicParameters();
+            parameters.Add("@couponid", id);
+            var context = _dapperContext.CreateConnection();
+            var value = await context.QueryFirstOrDefaultAsync<GetByIdDiscountCouponDto>(query, parameters);
+            return value;
         }
 
-        public Task UpdateDiscountCouponAsync(UpdateDiscountCouponDto updateCouponDto)
+        public async Task UpdateDiscountCouponAsync(UpdateDiscountCouponDto updateCouponDto)
         {
-            throw new NotImplementedException();
+            string query = "update Coupons set Code=@code,Rate=@rate,IsActive=@isactive,ValidDate=@validdate where CouponId=@id";
+            var parameters = new DynamicParameters();
+            parameters.Add("@id", updateCouponDto.CouponId);
+            parameters.Add("@code", updateCouponDto.Code);
+            parameters.Add("@rate", updateCouponDto.Rate);
+            parameters.Add("@isactive", updateCouponDto.IsActive);
+            parameters.Add("@validdate", updateCouponDto.ValidDate);
+            var context = _dapperContext.CreateConnection();
+            await context.ExecuteAsync(query, parameters);
         }
     }
 }
